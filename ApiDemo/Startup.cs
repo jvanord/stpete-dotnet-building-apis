@@ -35,6 +35,8 @@ namespace ApiDemo
 			}
 
 			app.UseMvcWithDefaultRoute();
+
+			app.UseStaticFiles();
 		}
 	}
 }

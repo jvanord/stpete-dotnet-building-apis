@@ -4,6 +4,7 @@
 	<head>
 		<title>API Test</title>
 		<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
+		<script src="~/js/test.js"></script>
 		<style>
 			#output > div, #output > p { padding: .5em; margin: .5em; }
 			.info { color: #006; background-color: #ccf; }
@@ -14,8 +15,7 @@
 		<div id="output"></div>
 		<script>
 			$(function () {
-				console.info('Page Loaded');
-				$('#output').append($('<p/>').addClass('info').text('Page Loaded'));
+				ApiTest.init();
 			});
 		</script>
 	</body>
