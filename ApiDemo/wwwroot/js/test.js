@@ -48,12 +48,22 @@ var ApiTest = (function (defaultOptions) {
 		};
 	})();
 
+
 	// Expose
 	return me;
 
 })({
-
 	// Add Default Options Here
 	outputElement: '#output'
+});
 
+ApiTest.values = (function (options) {
+	var uri = options.apiUrlBase + '/values';
+	return {
+		get: function (id) {
+			$.get(uri, { id }).done(function (result) { ApiTest.log.success('API Success', result); }).fail(function (e) { ApiTest.log.error('API Failure', e); })
+		}
+	};
+})({
+	apiUrlBase: 'http://localhost:51014/api'
 });

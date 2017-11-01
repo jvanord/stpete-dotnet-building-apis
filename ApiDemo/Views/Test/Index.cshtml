@@ -19,10 +19,18 @@
 		<div id="output"></div>
 		<script>
 			$(function () {
+
+				// Initialize the Test Object
 				ApiTest.init();
-				ApiTest.log.success('Test Success Message', { test: true });
-				ApiTest.log.warning('Test Warning Message', { test: true });
-				ApiTest.log.error('Test Error Message', { test: true });
+
+				// Test Get
+				ApiTest.values.get();
+				//ApiTest.values.get(42);
+
+				//ApiTest.log.success('Test Success Message', { test: true });
+				//ApiTest.log.warning('Test Warning Message', { test: true });
+				//ApiTest.log.error('Test Error Message', { test: true });
+
 			});
 		</script>
 	</body>
