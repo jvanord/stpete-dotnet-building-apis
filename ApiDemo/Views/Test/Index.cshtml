@@ -8,6 +8,10 @@
 		<style>
 			#output > div, #output > p { padding: .5em; margin: .5em; }
 			.info { color: #006; background-color: #ccf; }
+			.success { color: #060; background-color: #cfc; }
+			.warning { color: #660; background-color: #ffc; }
+			.error { color: #600; background-color: #fcc; }
+			.code { white-space: pre-wrap; background-color: #eee; }
 		</style>
 	</head>
 	<body>
@@ -16,6 +20,9 @@
 		<script>
 			$(function () {
 				ApiTest.init();
+				ApiTest.log.success('Test Success Message', { test: true });
+				ApiTest.log.warning('Test Warning Message', { test: true });
+				ApiTest.log.error('Test Error Message', { test: true });
 			});
 		</script>
 	</body>
