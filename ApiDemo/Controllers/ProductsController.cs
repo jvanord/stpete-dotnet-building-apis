@@ -1,0 +1,92 @@
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using ApiDemo.Data;
+using ApiDemo.Models;
+
+namespace ApiDemo.Controllers
+{
+    [Route("api/[controller]")]
+    public class ProductsController : Controller
+    {
+        // GET api/products[?{searchCriteria}]
+        [HttpGet]
+        public async Task<IActionResult> Get(ProductSearchCriteria searchCriteria = null)
+        {
+            if (searchCriteria == null || !searchCriteria.IsValid)
+                return Ok(await ProductRepository.Current.All());
+            else
+                return Ok(await ProductRepository.Current.Find(searchCriteria.Match));
+        }
+
+        // GET api/products/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                return BadRequest("Product ID not specified.");
+            var match = await ProductRepository.Current.GetById(id);
+            if (match == null)
+                return NotFound($"Product {id} Not Found");
+            return Ok(match);
+        }
+
+        // POST api/products
+        [HttpPost]
+        public async void Post([FromBody]Product product)
+        {
+        }
+
+        // PUT api/products/{id}
+        [HttpPut("{id}")]
+        public async void Put(string id, [FromBody]Product product)
+        {
+        }
+
+        // PUT api/products/{id}/description
+        [HttpPut("{id}/description")]
+        public async Task<IActionResult> Patch(string id, [FromBody]string description)
+        {
+            return Ok("Not really ok");
+        }
+
+        // PATCH api/products/{id}/price
+        [HttpPatch("{id}/price")]
+        public async void Patch(string id, [FromBody]decimal? price)
+        {
+        }
+
+        // DELETE api/products/{id}
+        [HttpDelete("{id}")]
+        public async void Delete(string id)
+        {
+        }
+    }
+
+    public class ProductSearchCriteria
+    {
+        public decimal? PriceGreaterThan { get; set; }
+        public decimal? PriceLessThan { get; set; }
+
+        public bool IsValid
+        {
+            get
+            {
+                return PriceGreaterThan.HasValue || PriceLessThan.HasValue;
+            }
+        }
+        public bool Match(Product product)
+        {
+            if (!IsValid) return false;
+            var isMatch = true;
+            if (PriceGreaterThan.HasValue) 
+                isMatch = isMatch && product.Price > PriceGreaterThan.Value;
+            if (PriceLessThan.HasValue)
+                isMatch = isMatch && product.Price < PriceLessThan.Value;
+            return isMatch;
+        }
+    }
+}
