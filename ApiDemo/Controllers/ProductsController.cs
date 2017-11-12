@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ApiDemo.Data;
+using ApiDemo.Data.Exceptions;
 using ApiDemo.Models;
 
 namespace ApiDemo.Controllers
@@ -36,33 +37,83 @@ namespace ApiDemo.Controllers
 
         // POST api/products
         [HttpPost]
-        public async void Post([FromBody]Product product)
+        public async Task<IActionResult> Post([FromBody]Product product)
         {
+            await ProductRepository.Current.Insert(product);
+            return CreatedAtAction("Get", new { id = product.ID });
         }
 
         // PUT api/products/{id}
         [HttpPut("{id}")]
-        public async void Put(string id, [FromBody]Product product)
+        public async Task<IActionResult> Put(string id, [FromBody]Product product)
         {
+            try
+            {
+                await ProductRepository.Current.Insert(product);
+            }
+            catch (ResourceNotFoundException ex)
+            {
+                var response = new HttpResponseMessage(System.Net.HttpStatusCode.NotFound)
+                {
+                    ReasonPhrase = ex.Message
+                };
+            }
+            catch (ResourceException ex)
+            {
+                var response = new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+                {
+                    ReasonPhrase = ex.Message
+                };
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            await ProductRepository.Current.Update(product);
+            return AcceptedAtAction("Get", new { id = product.ID });
         }
 
         // PUT api/products/{id}/description
         [HttpPut("{id}/description")]
-        public async Task<IActionResult> Patch(string id, [FromBody]string description)
+        public async Task<IActionResult> Put(string id, [FromBody]string description)
         {
-            return Ok("Not really ok");
+            var match = await ProductRepository.Current.GetById(id);
+            if (match == null) return NotFound();
+            match.Description = description;
+            await ProductRepository.Current.Update(match);
+            return AcceptedAtAction("Get", new { id = id });
         }
 
         // PATCH api/products/{id}/price
         [HttpPatch("{id}/price")]
-        public async void Patch(string id, [FromBody]decimal? price)
+        public async Task<IActionResult> Patch(string id, [FromBody]decimal? price)
         {
+            var match = await ProductRepository.Current.GetById(id);
+            if (match == null) return NotFound();
+            if (!price.HasValue) return BadRequest("Price must be specified.");
+            match.Price = price.Value;
+            await ProductRepository.Current.Update(match);
+            return AcceptedAtAction("Get", new { id = id });
         }
 
         // DELETE api/products/{id}
         [HttpDelete("{id}")]
-        public async void Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
+            try
+            {
+                ProductRepository.Current.RemoveById(id);
+            }
+            catch (ResourceNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (ResourceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return Accepted();
         }
     }
 
@@ -82,7 +133,7 @@ namespace ApiDemo.Controllers
         {
             if (!IsValid) return false;
             var isMatch = true;
-            if (PriceGreaterThan.HasValue) 
+            if (PriceGreaterThan.HasValue)
                 isMatch = isMatch && product.Price > PriceGreaterThan.Value;
             if (PriceLessThan.HasValue)
                 isMatch = isMatch && product.Price < PriceLessThan.Value;
