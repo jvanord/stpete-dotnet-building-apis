@@ -23,7 +23,9 @@ namespace ApiDemo
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddMvc();
+			// RespectBrowserAcceptHeader and AddXmlSerializerFormatters are required for content negotiotiation
+			services.AddMvc(options => options.RespectBrowserAcceptHeader = true)
+				.AddXmlSerializerFormatters();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
