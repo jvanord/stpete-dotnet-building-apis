@@ -4,34 +4,91 @@
 	<head>
 		<title>API Test</title>
 		<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
-		<script src="~/js/test.js"></script>
-		<style>
-			#output > div, #output > p { padding: .5em; margin: .5em; }
-			.info { color: #006; background-color: #ccf; }
-			.success { color: #060; background-color: #cfc; }
-			.warning { color: #660; background-color: #ffc; }
-			.error { color: #600; background-color: #fcc; }
-			.code { white-space: pre-wrap; background-color: #eee; }
-		</style>
+		<script src="/js/demo.js"></script>
+		<link rel="stylesheet" type="text/css" href="/css/demo.css">
 	</head>
 	<body>
-		<h1>API Test Page</h1>
-		<div id="output"></div>
+
+		<h1>API Order Test Page</h1>
+		<form id='order-item'>
+			<select id="product" name="productId">
+				<option value="">Please Select ...</option>
+			</select>
+			<input id="quantity" name="quantity" type="number" min="0" max="1000" step="1" />
+			<button type="submit">Add to Order</button>
+		</p>
+		<div id="order"></div>
+
 		<script>
 			$(function () {
 
-				// Initialize the Test Object
-				ApiTest.init();
+				// Initialize the App with options
+				App.init();
 
-				// Test Get
-				ApiTest.values.get();
-				//ApiTest.values.get(42);
+				// Load Products
+				App.products.getAll(function(products){
+					if (products && products.length){
+						$.each(products, function(i, p){
+							$('select#product').append($('<option/>').attr('value', p.id).text(p.description));
+						});
+					}
+				});
 
-				//ApiTest.log.success('Test Success Message', { test: true });
-				//ApiTest.log.warning('Test Warning Message', { test: true });
-				//ApiTest.log.error('Test Error Message', { test: true });
+				// Start Order
+				App.orders.start(displayOrder);
+
+				// Events
+				$('form#order-item').submit(function(e){
+					e.preventDefault();
+					var $form = $(this);
+					var data = $(this).serialize();
+					App.orders.addItem(data, displayOrder);
+					$('select#product').val('');
+					$('input#quantity').val('');
+				});
+				$('#order').on('click', '.more', function (e){
+					var $tr = $(e.currentTarget).closest('tr');
+					App.orders.changeQuantity($tr.data('id'), parseInt($tr.data('qty')) + 1, displayOrder)
+				});
+				$('#order').on('click', '.less', function (e){
+					var $tr = $(e.currentTarget).closest('tr');
+					App.orders.changeQuantity($tr.data('id'), parseInt($tr.data('qty')) - 1, displayOrder)
+				});
+				$('#order').on('click', '.delete', function (e){
+					var $tr = $(e.currentTarget).closest('tr');
+					App.orders.removeItem($tr.data('id'), displayOrder)
+				});
 
 			});
+
+			// Show the Order on the Page
+			function displayOrder(order){
+				var $order = $('#order').html('');
+				var $table = $('<table/>').appendTo($order);
+				var content = '<tr><td colspan="5">Order # ' + order.id + '</td></tr>';
+				$.each(order.items || [], function(i, item){
+					content += '<tr data-id="' + item.productID + '"" data-qty="' + item.quantity + '">'
+						+ '<td class="buttons">' 
+						+ '<a class="more" title="Add One">+</a>'
+						+ '<a class="less" title="Subtract One">-</a>'
+						+ '<a class="delete" title="Remove Line">&times;</a>'
+						+ '</td><td>' 
+						+ item.quantity
+						+ '</td><td>' 
+						+ item.description
+						+ '</td><td class="right">' 
+						+ item.unitCost.toFixed(2)
+						+ '</td><td class="right">' 
+						+ item.lineTotal.toFixed(2)
+						+ '</td></tr>';
+				});
+				content += '<tr><td colspan="4">Subtotal</td><td class="right">' + order.subtotal.toFixed(2) + '</td></tr>';
+				content += '<tr><td colspan="4">Tax</td><td class="right">' + order.tax.toFixed(2) + '</td></tr>';
+				content += '<tr><td colspan="4">Shipping and Handling</td><td class="right">' + order.shippingAndHandling.toFixed(2) + '</td></tr>';
+				content += '<tr><td colspan="4">Total</td><td class="right">' + order.total.toFixed(2) + '</td></tr>';
+				$table.append(content);
+			}
+
 		</script>
 	</body>
 </html>

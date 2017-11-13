@@ -8,6 +8,7 @@ namespace ApiDemo.Controllers
 {
     public class TestController : Controller
     {
+		[Route("")]
         public IActionResult Index()
         {
             return View();

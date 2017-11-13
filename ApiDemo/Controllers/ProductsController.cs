@@ -82,7 +82,7 @@ namespace ApiDemo.Controllers
             if (match == null) return NotFound();
             match.Description = description;
             await ProductRepository.Current.Update(match);
-            return AcceptedAtAction("Get", new { id = id });
+            return Ok(match);
         }
 
         // PATCH api/products/{id}/price
@@ -94,7 +94,7 @@ namespace ApiDemo.Controllers
             if (!price.HasValue) return BadRequest("Price must be specified.");
             match.Price = price.Value;
             await ProductRepository.Current.Update(match);
-            return AcceptedAtAction("Get", new { id = id });
+            return Ok(match);
         }
 
         // DELETE api/products/{id}
@@ -113,7 +113,7 @@ namespace ApiDemo.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            return Accepted();
+            return NoContent();
         }
     }
 

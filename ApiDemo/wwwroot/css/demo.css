@@ -1,0 +1,10 @@
+#order td { box-shadow: 2px 2px 2px #ccc; padding: .4em; }
+#order td.right { text-align: right; }
+#order td a { padding: 2px 4px; color: #006;  border-radius: 10px; margin: 0 4px; cursor: pointer; }
+
+#output > div, #output > p { padding: .5em; margin: .5em; }
+.info { color: #006; background-color: #ccf; }
+.success { color: #060; background-color: #cfc; }
+.warning { color: #660; background-color: #ffc; }
+.error { color: #600; background-color: #fcc; }
+.code { white-space: pre-wrap; background-color: #eee; }
