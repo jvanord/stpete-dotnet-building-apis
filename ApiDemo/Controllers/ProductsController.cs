@@ -71,7 +71,7 @@ namespace ApiDemo.Controllers
             }
 
             await ProductRepository.Current.Update(product);
-            return AcceptedAtAction("Get", new { id = product.ID });
+            return Ok(product);
         }
 
         // PUT api/products/{id}/description
@@ -103,7 +103,7 @@ namespace ApiDemo.Controllers
         {
             try
             {
-                ProductRepository.Current.RemoveById(id);
+                await ProductRepository.Current.RemoveById(id);
             }
             catch (ResourceNotFoundException)
             {

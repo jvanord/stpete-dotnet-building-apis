@@ -68,7 +68,7 @@ namespace ApiDemo.Data
 				throw new ResourceNotFoundException($"No product with ID {product.ID} exists.");
 		}
 
-		public async void RemoveById(string id) => _allProducts?.Remove(_allProducts?.FirstOrDefault(p => p.ID == id));
+		public async Task RemoveById(string id) => _allProducts?.Remove(_allProducts?.FirstOrDefault(p => p.ID == id));
 
 		private void initializeRepository()
 		{
