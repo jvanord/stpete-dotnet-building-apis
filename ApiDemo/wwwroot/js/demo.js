@@ -68,15 +68,20 @@ App.orders = (function() {
     },
     changeQuantity: function(id, qty, callback) {
       var order = JSON.parse(localStorage.getItem('currentOrder'));
-      var patchData = {
-        op: 'replace',
-        path: '/quantity',
-        value: qty
-      };
+      var patchData = [
+        {
+          op: 'replace',
+          path: '/quantity',
+          value: qty
+        }
+      ];
       $.ajax({
-		method: 'patch',
+        method: 'patch',
         url: '/api/orders/' + order.id + '/items/' + id,
-        data: patchData
+        data: JSON.stringify(patchData),
+        contentType: 'application/json',
+        processData: false,
+        dataType: 'json'
       }).done(function(order) {
         console.log('Order Item Quantity Changed', order);
         if (typeof callback === 'function') callback.call(this, order);
@@ -86,7 +91,7 @@ App.orders = (function() {
     removeItem: function(id, callback) {
       var order = JSON.parse(localStorage.getItem('currentOrder'));
       $.ajax({
-		method: 'delete',
+        method: 'delete',
         url: '/api/orders/' + order.id + '/items/' + id
       }).done(function(order) {
         console.log('Order Item ' + id + ' Removed', order);
