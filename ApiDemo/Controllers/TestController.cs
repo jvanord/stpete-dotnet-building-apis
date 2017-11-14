@@ -8,7 +8,11 @@ namespace ApiDemo.Controllers
 {
     public class TestController : Controller
     {
-		[Route("")]
+		/// <summary>
+		/// Returns a simple SPA for testing this API.
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet, Route("")]
         public IActionResult Index()
         {
             return View();
