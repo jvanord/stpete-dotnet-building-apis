@@ -37,15 +37,15 @@ namespace ApiDemo.Controllers
 
         // POST api/products
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Product product)
+        public async Task<IActionResult> Post(Product product)
         {
             await ProductRepository.Current.Insert(product);
-            return CreatedAtAction("Get", new { id = product.ID });
+			return Created(Url.Action("Get", new {}), product);
         }
 
         // PUT api/products/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(string id, [FromBody]Product product)
+        public async Task<IActionResult> Put(string id, Product product)
         {
             try
             {
