@@ -49,28 +49,16 @@ namespace ApiDemo.Controllers
         {
             try
             {
-                await ProductRepository.Current.Insert(product);
+                await ProductRepository.Current.Update(product);
             }
             catch (ResourceNotFoundException ex)
             {
-                var response = new HttpResponseMessage(System.Net.HttpStatusCode.NotFound)
-                {
-                    ReasonPhrase = ex.Message
-                };
-            }
-            catch (ResourceException ex)
-            {
-                var response = new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                {
-                    ReasonPhrase = ex.Message
-                };
+				return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-
-            await ProductRepository.Current.Update(product);
             return Ok(product);
         }
 
