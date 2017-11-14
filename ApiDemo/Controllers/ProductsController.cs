@@ -10,10 +10,18 @@ using ApiDemo.Models;
 
 namespace ApiDemo.Controllers
 {
+	/// <summary>
+	/// Manage Product Resources
+	/// </summary>
     [Route("api/[controller]")]
     public class ProductsController : Controller
     {
         // GET api/products[?{searchCriteria}]
+		/// <summary>
+		/// Get a list of Product representations.
+		/// </summary>
+		/// <param name="searchCriteria">Parameters that define search criteria. If null or empty, all products will be returned.</param>
+		/// <returns>Array of Product representations.</returns>
         [HttpGet]
         public async Task<IActionResult> Get(ProductSearchCriteria searchCriteria = null)
         {
@@ -24,6 +32,11 @@ namespace ApiDemo.Controllers
         }
 
         // GET api/products/{id}
+		/// <summary>
+		/// Get a single Product representaion by its ID.
+		/// </summary>
+		/// <param name="id">The string ID of the desired Product.</param>
+		/// <returns>The matching Product representaion.</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
         {
@@ -36,6 +49,13 @@ namespace ApiDemo.Controllers
         }
 
         // POST api/products
+		/// <summary>
+		/// Create a new Product resource.
+		/// </summary>
+		/// <param name="product">The Product to create.</param>
+		/// <returns>
+		/// A successful response returns the Location header identifying the new resource.
+		/// </returns>
         [HttpPost]
         public async Task<IActionResult> Post(Product product)
         {
@@ -43,8 +63,14 @@ namespace ApiDemo.Controllers
 			return Created(Url.Action("Get", new {}), product);
         }
 
-        // PUT api/products/{id}
-        [HttpPut("{id}")]
+		// PUT api/products/{id}
+		/// <summary>
+		/// Update a Product resource.
+		/// </summary>
+		/// <param name="id">The string ID of the Product being updated.</param>
+		/// <param name="product">All values for the Product to update.</param>
+		/// <returns></returns>
+		[HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, Product product)
         {
             try
@@ -62,8 +88,14 @@ namespace ApiDemo.Controllers
             return Ok(product);
         }
 
-        // PUT api/products/{id}/description
-        [HttpPut("{id}/description")]
+		// PUT api/products/{id}/description
+		/// <summary>
+		/// Change the description of a specified Product resource.
+		/// </summary>
+		/// <param name="id">The string ID of the Product being updated.</param>
+		/// <param name="description">The new description.</param>
+		/// <returns></returns>
+		[HttpPut("{id}/description")]
         public async Task<IActionResult> Put(string id, [FromBody]string description)
         {
             var match = await ProductRepository.Current.GetById(id);
@@ -73,8 +105,14 @@ namespace ApiDemo.Controllers
             return Ok(match);
         }
 
-        // PATCH api/products/{id}/price
-        [HttpPatch("{id}/price")]
+		// PATCH api/products/{id}/price
+		/// <summary>
+		/// Change the price of a specified Product resource.
+		/// </summary>
+		/// <param name="id">The string ID of the Product being updated.</param>
+		/// <param name="price">The new price.</param>
+		/// <returns></returns>
+		[HttpPatch("{id}/price")]
         public async Task<IActionResult> Patch(string id, [FromBody]decimal? price)
         {
             var match = await ProductRepository.Current.GetById(id);
@@ -85,8 +123,13 @@ namespace ApiDemo.Controllers
             return Ok(match);
         }
 
-        // DELETE api/products/{id}
-        [HttpDelete("{id}")]
+		// DELETE api/products/{id}
+		/// <summary>
+		/// Delete a specified Product resource.
+		/// </summary>
+		/// <param name="id">The string ID of the Product being deleted.</param>
+		/// <returns></returns>
+		[HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
             try
@@ -105,19 +148,25 @@ namespace ApiDemo.Controllers
         }
     }
 
+	/// <summary>
+	/// Defines parameters for Product searches.
+	/// </summary>
     public class ProductSearchCriteria
     {
-        public decimal? PriceGreaterThan { get; set; }
-        public decimal? PriceLessThan { get; set; }
+		/// <summary>If set, matching Products must have a Price greater than this value.</summary>
+		public decimal? PriceGreaterThan { get; set; }
 
-        public bool IsValid
+		/// <summary>If set, matching Products must have a Price less than this value.</summary>
+		public decimal? PriceLessThan { get; set; }
+
+        internal bool IsValid
         {
             get
             {
                 return PriceGreaterThan.HasValue || PriceLessThan.HasValue;
             }
         }
-        public bool Match(Product product)
+        internal bool Match(Product product)
         {
             if (!IsValid) return false;
             var isMatch = true;

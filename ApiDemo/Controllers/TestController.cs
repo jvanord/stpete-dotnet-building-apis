@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApiDemo.Controllers
 {
+	/// <summary>
+	/// Test Actions
+	/// </summary>
     public class TestController : Controller
     {
 		/// <summary>
