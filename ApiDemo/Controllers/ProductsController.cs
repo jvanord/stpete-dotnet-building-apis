@@ -40,7 +40,7 @@ namespace ApiDemo.Controllers
         public async Task<IActionResult> Post(Product product)
         {
             await ProductRepository.Current.Insert(product);
-			return Created(Url.Action("Get", new {}), product);
+			return Created(Url.Action("Get", new { id = product.ID }), product);
         }
 
         // PUT api/products/{id}
